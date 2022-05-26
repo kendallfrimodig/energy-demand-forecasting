@@ -16,11 +16,11 @@
 
 <br>
 
-<p style="line-height:2">
+
 Today I'm going to walk though a team project I recently participated in, focusing on energy demand forecasting. Texas was the subject matter, as it operates as an independent energy grid (other states of US connected) and recently experienced a near meltdown in its basic generating capacity, as a result of the winter storm of Valentines day weekend in 2021. Though the event was unprecedented, neighboring states fared the storm without the loss of life seen in Texas.
 Me and my teammates thought a review of their preparedness tools might present an opportunity for positive change.<br><br>
 
-<p style="line-height:2">
+
 This blog post is a technical walkthrough of how one might replicate such an analysis, for another state or region. Therefore, lengthwise it will be somewhere in between a readme and a reading through the entire project repository of 5 jupyter notebooks. I will include code snippets but only necessary ones, if you wish to see more comments feel free to read the notebooks on the repo link here. <br><br>
 
 ---
@@ -31,7 +31,7 @@ This blog post is a technical walkthrough of how one might replicate such an ana
 
 <br>
 
-<p style="line-height:2">
+
 Upon investigation, we found that the only open source forecasting tool utilized by grid operators is the US energy information administration (EIA), which makes 12 hour ahead forecasts twice a day. Their model does not perform well with anomalies, and in times of crisis a more short term and reactive forecast could prove more valuable to operators. I believe there is a need for more independant analysis focused on our electrical grid, so I'll outline (in code snippets) how to access the hourly generation and demand data, and offer some tips for formatting and visualizing the data. <br><br>
 
 
@@ -41,19 +41,19 @@ Upon investigation, we found that the only open source forecasting tool utilized
 
 <br>
 
-<p style="line-height:2">
+
 Before I get into some of the reasons an updated forecasting tool might better prepare Texas for another emergency, its worth highlighting that this was
 on for the books. Compared to the past two artic events, this recent storm was far more severe <br>
 
 ![The 7 day average departure for the February](https://pbs.twimg.com/media/Eu2IqLqXYAMbkkb?format=jpg&name=large)<br><br>
 
-<p style="line-height:2">
+
 Energy must be produced in real time, to match demand - otherwise load shedding is necessary (temporary or prolonged blackouts) and as you might guess one person does not have the authority to flip the switch for select plants in such a time sensitive situation. If the demand is not sufficiently decreased in time, a generating station's circuit breaker can trip, and turning the plant back on can take days. <br><br>
 
-<p style="line-height:2">
+
 Once one plant goes offline, its far more likely the web of power-plants will collectively fall in a chain reaction - in the worst case the entire state could be without power for a minimum of several days. This is a tricky line to walk  since coal or natural gas power plants aren't acquiring their resources on-site, and sources outside hydroelectric and nuclear are vulnerable to their own environmental conditions to stay online.  <br><br>
 
-<p style="line-height:2">
+
 In the event of grid overload most other states can reliably pull electricity from neighboring connections, however the lone star state does not benefit form such interconnectivity. Though the figure shows two connections, data indicates little to no transfer of energy from oklahoma and mexico. In other words what little outside connection texas does have, is not comparable on scale to other interconnections. <br>
 
 
@@ -68,16 +68,16 @@ Youtuber 'Practical Engineering' explains how close the texas power crisis was t
 
 <br>
 
-<p style="line-height:2">
+
 Outside of grid stability there is another upside of having accurate energy demand forecasts, cost savings for the consumer.<br><br>
 
-<p style="line-height:2">
+
 Accurate predictions of overall energy demand with respect to a states generation ceiling are crucial, and the rate of change (delta) of demand play a significant role in price. Although your average Texan will pay a agreed upon rate, for protection against such price gouging, many are offered access to market electricity pricing and indeed sign up. If you have 2 electric cars at home, utilizing the lower cost at night could save you alot of cash.  <br>
 
 
 ![average price for electricity in Texas, Feb. 2021](https://www.eia.gov/todayinenergy/images/2022.01.07/main.svg) <br><br>
 
-<p style="line-height:2">
+
 As you can see, the spot price per megawatt increased from the winter average of 20 dollars per megawatt to 1,485, a 7,325% increase where it remained for three days. For those opting into market rate energy, having better forecasts for demand could have saved a fortune (since the EIA forecast was far lower than played out) <br><br>
 
 ---
@@ -211,7 +211,7 @@ def make_energy_df(api_key, plant, query):
 
 <br>
 
-<p style="line-height:2">
+
 This nested for-loop aggregates all the dataframes created using the make_energy_df function over each query in the query_list and each plant in the plant_list. It then sorts the dataframe by plant and then by datetime. In other words, one plant at a time, all available hourly data are pulled stepwise for each 'query' including specific energy type generation, demand, net generation, and interchange. An exception is made via if / else, since generation data by specific type of energy returns a 'none type' rather than 0 if the region doesn't have any production by oil, for example (and very common)<br><br>
 
 
@@ -1048,10 +1048,10 @@ nrg['datetime'] = pd.to_datetime(nrg['datetime'].str[:-3],format='%Y%m%dT%H')
 
 <br><br>
 
-<p style="line-height:2">
+
 Since we're dealing with time series, we can take advantage of several time aggregation windows. As there are 11 time series models in the ARIMA, VAR, and Exponential Smoothing families to choose from, we need to visualize trends by hour, week, month, and annual windows.
 
-<p style="line-height:2">
+
 The behavior of historical data determined by a variety of visuals will allow us to narrow down our choice of model, and whether additional parameters such as seasonality and holidays will be required (Ockham's razor: simplicity is better)
 
 <br><br>
@@ -1322,7 +1322,7 @@ melt_nrg.set_index('datetime')
 
 <br><br>
 
-Using column to label and columnt to color dictionaries will allow for obtaining the correct set and order if we make a temporary dataset, such as only specific types of energy.
+Using column to label and column to color dictionaries will allow for obtaining the correct set and order if we make a temporary dataset, such as only specific types of energy.
 
 <br>
 
@@ -1542,7 +1542,7 @@ plt.title(figtitle, pad=20);
 
 <br><br>
 
-<p style="line-height:2">
+
 As you can see, the contribution of solar, and hydroelectric are miniscule for Texas. Some states like Washington, source over half of their generation for hydroelectric sources. Given it's geography and resources, Texas primarily relies on wind, natural gas, and coal for it's  energy. Nuclear provides a basline, though its consistency makes these other three sources primary considerations in times of additional energy demand. Knowing the primary three dynamic sources of energy for Texas, we'll investigate their fluctuations further
 
 
@@ -1573,7 +1573,7 @@ plt.ylabel("Mega Watt Hours")
 
 <br><br>
 
-<p style="line-height:2">
+
 The benefit of Texas having such a large portion of it's energy come from wind, is that understanding when more supplemental energy from coal and natural gas is needed can be estimated using historical weather data. On a weekly basis, estimating the offset wind energy contributes could allow proper stocking of fossil fuel sources. Despite this, wind energy has great hour to hour, day to day variation, and presents some challenges. As you can see here, the limited use of solar energy still presents a better consistency.
 
 
