@@ -23,6 +23,8 @@ Me and my teammates thought a review of their preparedness tools might present a
 
 This blog post is a technical walkthrough of how one might replicate such an analysis, for another state or region. Therefore, lengthwise it will be somewhere in between a readme and a reading through the entire project repository of 5 jupyter notebooks. I will include code snippets but only necessary ones, if you wish to see more comments feel free to read the notebooks on the repo link here. <br><br>
 
+[Project Source Code](https://github.com/jf-silverman/energy_forecasting)
+
 ---
 
 <br>
@@ -2533,6 +2535,15 @@ plt.show();
 
 
 
-```python
 
-```
+# Final Thoughts, Next steps
+
+As events like the 2021 Texas power crisis become more common with climate change and aging US energy grid infrastructure, it becomes increasingly important for the public to understand where their power comes from and how overall energy demand may affect them. In our exploratory data visualizations we show patterns of renewable power generation that can be useful for individuals who are interested in timing their use to minimize their carbon footprint.
+
+For example, individuals can use this type of demand forecast to time their power usage to lower cost times, such as for electric vehicle charging. Providing accurate energy demand forecasts are also important for energy grid operators.
+
+We developed a simple set of 1 hour forecast models that have the advantage of being fast and scalable (as opposed to ARIMA forecasts and others). Our triple smoothed exponential models are a good choice for streaming forecasts online. In addition, these types of models are not as influenced by long-past exogenous events such as previous-annual holidays. This allows them to follow recent patterns better.
+
+Our next goal is to create a site where people can view the average breakdown of the source of their electricity along with a predicted price available on an hourly basis. We will utilize the api functions along with the models we created to predict demand to ultimately aid in predicting the electricity price for residents.
+
+The next steps will be to find sources of electricity data that we can pull on a regular basis to tune our models on and feed into a Streamlit app that end-users can interact with. We believe that giving end-users the ability to know what their electricity price will be in the future along with the composition of the sources will allow them to make informed decisions on their energy use.
