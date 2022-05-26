@@ -900,7 +900,7 @@ msno.matrix(na_check, sparkline=False, figsize=(15,15), fontsize=12, color=(0.27
 ```
 
 
-![png](index_files/index_28_0.png)
+![png](img/index_28_0.png)
 
 
 <br><br>
@@ -1491,7 +1491,7 @@ plt.plot(demand_weekly, linewidth=0.5);
 ```
 
 
-![png](index_files/index_69_0.png)
+![png](img/index_69_0.png)
 
 
 
@@ -1502,7 +1502,7 @@ plt.plot(demand_monthly, linewidth=0.5);
 ```
 
 
-![png](index_files/index_70_0.png)
+![png](img/index_70_0.png)
 
 
 <br><br>
@@ -1539,7 +1539,7 @@ plt.title(figtitle, pad=20);
 ```
 
 
-![png](index_files/index_72_0.png)
+![png](img/index_72_0.png)
 
 
 <br><br>
@@ -1570,7 +1570,7 @@ plt.ylabel("Mega Watt Hours")
 
 
 
-![png](index_files/index_74_1.png)
+![png](img/index_74_1.png)
 
 
 <br><br>
@@ -1593,7 +1593,7 @@ plt.ylabel("Mega Watt Hours");
 ```
 
 
-![png](index_files/index_76_0.png)
+![png](img/index_76_0.png)
 
 
 <br><br>
@@ -1773,7 +1773,7 @@ nrg['demand'][10000:12000].plot(figsize=(20,3), kind='line', color='#EC5064')
 
 
 
-![png](index_files/index_87_1.png)
+![png](img/index_87_1.png)
 
 
 Model 1 - Moving Average model: takes an average of the 30 data points(hours) to predict the next hour's demand. Does not match peaks and troughs well.
@@ -1826,7 +1826,7 @@ df_three[['Demand','Forecast']][10000:12000].plot(figsize=(20,3), kind='line',ti
 
 
 
-![png](index_files/index_92_1.png)
+![png](img/index_92_1.png)
 
 
 Model 2 - Simple Exponential Smoothing: Model fits better than moving average but does not account for seasonality. The bias is -0.34, MAE: 3386, and RMSE: 4189.
@@ -1940,7 +1940,7 @@ tri_exp[['Demand','Forecast']][10000:12000].plot(figsize=(20,3), kind='line',tit
 
 
 
-![png](index_files/index_101_1.png)
+![png](img/index_101_1.png)
 
 
 Model 3 - Triple Exponential Smoothing: Takes exponential smoothing and introduces seasonality parameter. The bias is -0.93, MAE: 1337, and RMSE: 1687.
@@ -2201,7 +2201,7 @@ plt.savefig('./output/comparing_base_demand_forecast_scatter.png')
 ```
 
 
-![png](index_files/index_116_0.png)
+![png](img/index_116_0.png)
 
 
 ### last Month and a Half
@@ -2225,7 +2225,7 @@ plt.show();
 ```
 
 
-![png](index_files/index_118_0.png)
+![png](img/index_118_0.png)
 
 
 ## Baseline Model Metrics
@@ -2268,7 +2268,7 @@ plt.show();
 ```
 
 
-![png](index_files/index_123_0.png)
+![png](img/index_123_0.png)
 
 
 biased towards forecast being greater than actual demand, that's preferable since excess energy can always be sent off but not generating enough can pose a major threat to the grid.
@@ -2483,7 +2483,7 @@ plt.savefig('./output/comparing_test_demand_forecast_scatter.png')
 ```
 
 
-![png](index_files/index_138_0.png)
+![png](img/index_138_0.png)
 
 
 
@@ -2502,7 +2502,7 @@ plt.show();
 ```
 
 
-![png](index_files/index_139_0.png)
+![png](img/index_139_0.png)
 
 
 ### Residuals
@@ -2531,7 +2531,49 @@ plt.show();
 ```
 
 
-![png](index_files/index_142_0.png)
+![png](img/index_142_0.png)
+
+## Model Comparison
+
+**Our Model**
+
+![png](img/index_138_0.png)
+
+<br>
+
+-  Bias: -0.93, -0.00%
+-  MAE: 1337.39, 3.03%
+-  RMSE: 1687.98, 3.83%
+
+<br>
+
+-  Neutral Bias (better than + still)
+-  Higher absolute error
+-  RMSE lower due to anomaly handling
+
+<br>
+
+**EIA 24 Hour Forecast Model**
+
+![png](img/index_116_0.png)
+
+<br>
+
+-  Bias: -170.04, -0.39%
+-  MAE: 1099.16, 2.51%
+-  RMSE: 1821.58, 4.16%
+
+<br>
+
+-  Negative Bias (better than +)
+-  Better absolute error
+-  RMSE higher due to poor performance
+during anomalies
+
+<br><br>
+
+
+Overall our model is not as influenced by irregularities. Over time the pattern in demand has changed, and thus a model too reliant on historical data can have it's weaknesses. Each year’s peaks days seem to fluctuate, based on more frequent, record breaking weather events. Even though the model only predicts 1 hour ahead of time, it could still serve as an additional tool for power operators. (more accurate during irregular peaks in demand)
 
 
 
@@ -2540,9 +2582,15 @@ plt.show();
 
 As events like the 2021 Texas power crisis become more common with climate change and aging US energy grid infrastructure, it becomes increasingly important for the public to understand where their power comes from and how overall energy demand may affect them. In our exploratory data visualizations we show patterns of renewable power generation that can be useful for individuals who are interested in timing their use to minimize their carbon footprint.
 
+<br>
+
 For example, individuals can use this type of demand forecast to time their power usage to lower cost times, such as for electric vehicle charging. Providing accurate energy demand forecasts are also important for energy grid operators.
 
+<br>
+
 We developed a simple set of 1 hour forecast models that have the advantage of being fast and scalable (as opposed to ARIMA forecasts and others). Our triple smoothed exponential models are a good choice for streaming forecasts online. In addition, these types of models are not as influenced by long-past exogenous events such as previous-annual holidays. This allows them to follow recent patterns better.
+
+<br>
 
 Our next goal is to create a site where people can view the average breakdown of the source of their electricity along with a predicted price available on an hourly basis. We will utilize the api functions along with the models we created to predict demand to ultimately aid in predicting the electricity price for residents.
 
