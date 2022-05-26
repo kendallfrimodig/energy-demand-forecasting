@@ -898,9 +898,7 @@ msno.matrix(na_check, sparkline=False, figsize=(15,15), fontsize=12, color=(0.27
 ```
 
 
-    
 ![png](index_files/index_28_0.png)
-    
 
 
 <br><br>
@@ -1503,9 +1501,7 @@ plt.plot(demand_weekly, linewidth=0.5);
 ```
 
 
-    
 ![png](index_files/index_69_0.png)
-    
 
 
 
@@ -1516,9 +1512,7 @@ plt.plot(demand_monthly, linewidth=0.5);
 ```
 
 
-    
 ![png](index_files/index_70_0.png)
-    
 
 
 <br><br>
@@ -1555,9 +1549,7 @@ plt.title(figtitle, pad=20);
 ```
 
 
-    
 ![png](index_files/index_72_0.png)
-    
 
 
 <br><br>
@@ -1588,9 +1580,7 @@ plt.ylabel("Mega Watt Hours")
 
 
 
-    
 ![png](index_files/index_74_1.png)
-    
 
 
 <br><br>
@@ -1613,9 +1603,7 @@ plt.ylabel("Mega Watt Hours");
 ```
 
 
-    
 ![png](index_files/index_76_0.png)
-    
 
 
 <br><br>
@@ -1857,9 +1845,7 @@ nrg['demand'][10000:12000].plot(figsize=(20,3), kind='line', color='#EC5064')
 
 
 
-    
 ![png](index_files/index_87_1.png)
-    
 
 
 Model 1 - Moving Average model: takes an average of the 30 data points(hours) to predict the next hour's demand. Does not match peaks and troughs well.
@@ -1912,9 +1898,7 @@ df_three[['Demand','Forecast']][10000:12000].plot(figsize=(20,3), kind='line',ti
 
 
 
-    
 ![png](index_files/index_92_1.png)
-    
 
 
 Model 2 - Simple Exponential Smoothing: Model fits better than moving average but does not account for seasonality. The bias is -0.34, MAE: 3386, and RMSE: 4189.
@@ -2028,9 +2012,7 @@ tri_exp[['Demand','Forecast']][10000:12000].plot(figsize=(20,3), kind='line',tit
 
 
 
-    
 ![png](index_files/index_101_1.png)
-    
 
 
 Model 3 - Triple Exponential Smoothing: Takes exponential smoothing and introduces seasonailty parameter. The bias is -0.93, MAE: 1337, and RMSE: 1687.
@@ -2291,9 +2273,7 @@ plt.savefig('./output/comparing_base_demand_forecast_scatter.png')
 ```
 
 
-    
 ![png](index_files/index_116_0.png)
-    
 
 
 ### last Month and a Half
@@ -2317,9 +2297,7 @@ plt.show();
 ```
 
 
-    
 ![png](index_files/index_118_0.png)
-    
 
 
 ## Baseline Model Metrics
@@ -2362,9 +2340,7 @@ plt.show();
 ```
 
 
-    
 ![png](index_files/index_123_0.png)
-    
 
 
 biased towards forecast being greater than actual demand, that's preferable since excess energy can always be sent off but not generating enough can pose a major threat to the grid.
@@ -2579,9 +2555,7 @@ plt.savefig('./output/comparing_test_demand_forecast_scatter.png')
 ```
 
 
-    
 ![png](index_files/index_138_0.png)
-    
 
 
 
@@ -2600,9 +2574,7 @@ plt.show();
 ```
 
 
-    
 ![png](index_files/index_139_0.png)
-    
 
 
 ### Residuals
@@ -2631,9 +2603,7 @@ plt.show();
 ```
 
 
-    
 ![png](index_files/index_142_0.png)
-    
 
 
 
