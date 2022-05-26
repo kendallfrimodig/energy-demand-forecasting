@@ -19,23 +19,23 @@
 <p style="line-height:2">
 Today I'm going to walk though a team project I recently participated in, focusing on energy demand forecasting. Texas was the subject matter, as it operates as an independent energy grid (other states of US connected) and recently experienced a near meltdown in its basic generating capacity, as a result of the winter storm of Valentines day weekend in 2021. Though the event was unprecedented, neighboring states fared the storm without the loss of life seen in Texas.
 Me and my teammates thought a review of their preparedness tools might present an opportunity for positive change.<br><br>
- 
+
 <p style="line-height:2">
-This blog post is a technical walkthrough of how one might replicate such an analysis, for another state or region. Therefore, lengthwise it will be somewhere in between a readme and a reading through the entire project repository of 5 jupyter notebooks. I will include code snippets but only neccesary ones, if you wish to see more comments feel free to read the notebooks on the repo link here.<br><br>
+This blog post is a technical walkthrough of how one might replicate such an analysis, for another state or region. Therefore, lengthwise it will be somewhere in between a readme and a reading through the entire project repository of 5 jupyter notebooks. I will include code snippets but only necessary ones, if you wish to see more comments feel free to read the notebooks on the repo link here. <br><br>
 
 ---
-    
+
 <br>
-    
+
 ### Scope
 
 <br>
-    
-<p style="line-height:2">
-Upon investigation, we found that the only open source forecasting tool utilized by grid operators is the US energy information administration (EIA), which makes 12 hour ahead forecasts twice a day. Their model does not perform well with anomolies, and in times of crisis a more short term and reactive forecast could prove more valuable to operators. I beleive there is a need for more independant analysis focused on our electical grid, so I'll outline (in code snippets) how to access the hourly generation and demand data, and offer some tips for formatting and visualizing the data. <br><br>
-    
 
-**I will also report on our model performence versus the baseline, and how having such a model amidst a crisis could be of more utility.** <br><br>
+<p style="line-height:2">
+Upon investigation, we found that the only open source forecasting tool utilized by grid operators is the US energy information administration (EIA), which makes 12 hour ahead forecasts twice a day. Their model does not perform well with anomalies, and in times of crisis a more short term and reactive forecast could prove more valuable to operators. I believe there is a need for more independant analysis focused on our electrical grid, so I'll outline (in code snippets) how to access the hourly generation and demand data, and offer some tips for formatting and visualizing the data. <br><br>
+
+
+**I will also report on our model performance versus the baseline, and how having such a model amidst a crisis could be of more utility.** <br><br>
 
 ### Relevance
 
@@ -51,21 +51,21 @@ on for the books. Compared to the past two artic events, this recent storm was f
 Energy must be produced in real time, to match demand - otherwise load shedding is necessary (temporary or prolonged blackouts) and as you might guess one person does not have the authority to flip the switch for select plants in such a time sensitive situation. If the demand is not sufficiently decreased in time, a generating station's circuit breaker can trip, and turning the plant back on can take days. <br><br>
 
 <p style="line-height:2">
-Once one plant goes offline, its far more likely the web of power-plants will collectively fall in a chain reaction - in the worst case the entire state could be without power for a minimum of several days. This is a tricky line to walk  since coal or natural gas power plants aren't acquiring their resources on-site, and sources outside hydroelectic and nuclear are vulnerable to their own environmental conditions to stay online.  <br><br>
-    
+Once one plant goes offline, its far more likely the web of power-plants will collectively fall in a chain reaction - in the worst case the entire state could be without power for a minimum of several days. This is a tricky line to walk  since coal or natural gas power plants aren't acquiring their resources on-site, and sources outside hydroelectric and nuclear are vulnerable to their own environmental conditions to stay online.  <br><br>
+
 <p style="line-height:2">
 In the event of grid overload most other states can reliably pull electricity from neighboring connections, however the lone star state does not benefit form such interconnectivity. Though the figure shows two connections, data indicates little to no transfer of energy from oklahoma and mexico. In other words what little outside connection texas does have, is not comparable on scale to other interconnections. <br>
 
-    
-    
+
+
 ![](https://www.eia.gov/electricity/930-content/930_map.png)<br><br>
 
-Youtuber 'Practical Engineering' explains how close the texas power crisis was to being a true catastophe and the mechanics underlying this delicate grid state in an approachable way [(link)](https://www.youtube.com/watch?v=08mwXICY4JM) <br><br>
+Youtuber 'Practical Engineering' explains how close the texas power crisis was to being a true catastrophe and the mechanics underlying this delicate grid state in an approachable way [(link)](https://www.youtube.com/watch?v=08mwXICY4JM) <br><br>
 
 ---
 
 ### Energy Prices
-    
+
 <br>
 
 <p style="line-height:2">
@@ -86,18 +86,18 @@ As you can see, the spot price per megawatt increased from the winter average of
 
 <br>
 
-The EIA provides a variety of databases one can access. Seperate data exist for the following:
+The EIA provides a variety of databases one can access. Separate data exist for the following:
 
 - Demand (D)
 - Net generation (NG)
-- Net generation by energy source (NG.***)
+- Net generation by energy source (NG.__)
 - Total interchange (TI)
 - Day-ahead demand forecast (DF)
 
-You can specify a single 'balancing authority' or in other words operator, a list of operators, or an entire region. 
-We retreived all the above for Texas's single operator - ERCOT. 
+You can specify a single 'balancing authority' or in other words operator, a list of operators, or an entire region.
+We retrieved all the above for Texas's single operator - ERCOT.
 
-You'll need to sign up for an API key but this is a simple process and should be approved immediatly. If generation from a particular source is '0', the query will return 'no data' and mess things up. We built in a if/else function to handle such cases. Thus our api function has three inputs: 
+You'll need to sign up for an API key but this is a simple process and should be approved immediately. If generation from a particular source is '0', the query will return 'no data' and mess things up. We built in a if/else function to handle such cases. Thus our api function has three inputs:
 
 - Your key
 - the plant(s) code
@@ -138,7 +138,7 @@ Insert your api key here from the EIA website (https://www.eia.gov/opendata/).
 
 
 ```python
-api_key= 'bge1juIp1RgbFRL6dmDi6fQYyGTDhOI0x1FAx5Yv'
+api_key= ''
 ```
 
 <br><br>
@@ -150,14 +150,14 @@ We start with a dictionary with the keys corresponding to the (API defined) quer
 query_dict= {'D':'dmnd',
              'NG':'ngen',
              'TI':'intr',
-             'DF':'pred', 
-             'NG.COL':'coal', 
-             'NG.WAT':'watr', 
-             'NG.NG':'ngas', 
-             'NG.NUC':'nucl', 
-             'NG.OTH':'othr', 
-             'NG.OIL':'oil', 
-             'NG.SUN':'solr', 
+             'DF':'pred',
+             'NG.COL':'coal',
+             'NG.WAT':'watr',
+             'NG.NG':'ngas',
+             'NG.NUC':'nucl',
+             'NG.OTH':'othr',
+             'NG.OIL':'oil',
+             'NG.SUN':'solr',
              'NG.WND':'wind'}
 
 query_list = list(query_dict.keys())
@@ -178,7 +178,7 @@ The first function will be at the core of the second, and will parse the JSON da
 
 
 ```python
-def extract_energy(res): 
+def extract_energy(res):
     if res.status_code == 200:
         ts= res.json()['series'][0]['data'] # location of information from json file
         df= pd.DataFrame(ts)
@@ -214,17 +214,17 @@ def make_energy_df(api_key, plant, query):
 <p style="line-height:2">
 This nested for-loop aggregates all the dataframes created using the make_energy_df function over each query in the query_list and each plant in the plant_list. It then sorts the dataframe by plant and then by datetime. In other words, one plant at a time, all available hourly data are pulled stepwise for each 'query' including specific energy type generation, demand, net generation, and interchange. An exception is made via if / else, since generation data by specific type of energy returns a 'none type' rather than 0 if the region doesn't have any production by oil, for example (and very common)<br><br>
 
-    
 
-**query_df** 
+
+**query_df**
 - the individual measure and timestamp for a specific plant (solar for example) temporary within the second nested level running through each query code
-    
-**energy** 
+
+**energy**
 - temporary in the first nested level, overwritten after each plant's data is pulled and added to 'master_energy'. Each 'query_df' is added as a single column until each query has been completed
-    
-**master_energy** 
+
+**master_energy**
 - a long form concatenated dataframe where each plant's hourly data is combined at the end
-    
+
 <br>
 
 
@@ -248,7 +248,7 @@ for plant in plant_list:
                 query_df.columns= ['datetime', query_dict[query]]
                 query_df.set_index('datetime', inplace= True)
 
-                energy= pd.merge(energy, query_df[query_dict[query]], 
+                energy= pd.merge(energy, query_df[query_dict[query]],
                                  on= 'datetime', how= 'outer')
                 energy['plant']= plant
 
@@ -268,7 +268,7 @@ for plant in plant_list:
 
 <br><br>
 
-Check the length (for each plant) of the output data. In most cases, more historical data will be available for the aggregate measures, as it appears energy specific generation data is relatively newer. 
+Check the length (for each plant) of the output data. In most cases, more historical data will be available for the aggregate measures, as it appears energy specific generation data is relatively newer.
 
 
 ```python
@@ -869,11 +869,11 @@ master_energy[24:26]
 
 <br><br>
 
-For proper timeseries analysis, without imputation, we'll need to ensure theres no major periods of time with unexplained missing data. 
+For proper timeseries analysis, without imputation, we'll need to ensure theres no major periods of time with unexplained missing data.
 
 <br>
 
-- If you're focused specifically on eregy type, you will be limited to data from the year
+- If you're focused specifically on energy type, you will be limited to data from the year
 
 - If the gaps in aggregate measures (total generation, demand) are missing for a short period of time, you can reliably impute such data
 
@@ -907,9 +907,9 @@ There appears to be a brief break in forecasted demand, before the time where en
 
 To narrow down the specific dates, we can run through the predicted dates, and demand and produce flags when we encounter a missing value
 
-<br> 
+<br>
 
-first we'll check the magnitude of missing hour data 
+first we'll check the magnitude of missing hour data
 
 
 ```python
@@ -1019,7 +1019,7 @@ There are more gaps in recorded demand, for our analysis we chose to model follo
 
 <br><br>
 
-Saves dataframe to csv file. Can input your own title after '../data/' to make it more understandble for you. It is commented out to not unintentionally overwrite the csv file used for the analyses when this specific project occured.
+Saves dataframe to csv file. Can input your own title after '../data/' to make it more understandable for you. It is commented out to not unintentionally overwrite the csv file used for the analyses when this specific project occurred.
 
 
 ```python
@@ -1034,10 +1034,10 @@ master_energy.to_csv('data/all_erco_energy_cst.csv')
 
 <br>
 
-Before you visualize or model the hourly data, you'll have to convert the timestamp to a pandas 'datetime' data type. 
+Before you visualize or model the hourly data, you'll have to convert the timestamp to a pandas 'datetime' data type.
 
 
-Coulmn names re-formatted to 4 character codes for tidyness when assinging color palletes
+Column names re-formatted to 4 character codes for tidyness when assigning color palletes
 
 
 ```python
@@ -1049,14 +1049,14 @@ nrg['datetime'] = pd.to_datetime(nrg['datetime'].str[:-3],format='%Y%m%dT%H')
 <br><br>
 
 <p style="line-height:2">
-Since we're dealing with time series, we can take advantage of several time aggregation windows. As there are 11 time series models in the ARIMA, VAR, and Exponential Smoothing families to choose from, we need to visualize trends by hour, week, month, and annual windows. 
+Since we're dealing with time series, we can take advantage of several time aggregation windows. As there are 11 time series models in the ARIMA, VAR, and Exponential Smoothing families to choose from, we need to visualize trends by hour, week, month, and annual windows.
 
 <p style="line-height:2">
-The behavior of historical data determined by a variety of visuals will allow us to narrow down our choice of model, and whether additional parameters such as seasonality and holidays will be required (okhams razor: simplicity is better) 
+The behavior of historical data determined by a variety of visuals will allow us to narrow down our choice of model, and whether additional parameters such as seasonality and holidays will be required (Ockham's razor: simplicity is better)
 
 <br><br>
 
-**Dropping records that in the data for forcasting that don't have energy type info**
+**Dropping records that in the data for forecasting that don't have energy type info**
 
 
 ```python
@@ -1100,12 +1100,6 @@ nrg.apply(lambda row: calc_col_vals(row), axis=1).value_counts()
 
 
 
-    Day      16990
-    Night    16989
-    dtype: int64
-
-
-
 
 ```python
 # day of the week
@@ -1116,12 +1110,6 @@ nrg['weekday'] = nrg['datetime'].dt.strftime('%a')
 ```python
 # numbered day of week for chart order
 nrg['weekday_num'] = pd.to_numeric(nrg['datetime'].dt.strftime('%w'))
-```
-
-
-```python
-# an am/pm column, but not sure this is useful
-#msnrg['am_pm'] = msnrg['datetime'].dt.strftime('%p')
 ```
 
 
@@ -1141,7 +1129,7 @@ nrg['month_num'] = pd.to_numeric(nrg['month_num'])
 
 <br><br>
 
-**Finally, we'll create a 'long' formatted data frame including our calculations above, where the 'wide' daframes columns are seperate dataframes for each energy source, stacked on top of eachother**
+**Finally, we'll create a 'long' formatted data frame including our calculations above, where the 'wide' dataframes columns are separate dataframes for each energy source, stacked on top of each other**
 
 
 
@@ -1372,11 +1360,11 @@ colors = {  'dmnd': '#007EB5', # baby blue
 #FFFFFF white
 ```
 
-<br><br> 
+<br><br>
 
-To demonstrate this flexibility, I'll create three sets of color palletes and labels for following figures, 
+To demonstrate this flexibility, I'll create three sets of color palletes and labels for following figures,
 
-- one for all measures 
+- one for all measures
 - one for just energy types (leaving out oil, and hydroelectric as they are irrelevant in Texas's case)
 - one for aggregate measures of demand, forecasted demand, total interchange, and net generation
 
@@ -1555,7 +1543,7 @@ plt.title(figtitle, pad=20);
 <br><br>
 
 <p style="line-height:2">
-As you can see, the contribution of solar, and hydroelectric are miniscule for Texas. Some states like Washington, source over half of their generation for hydroelectric sources.Given it's geography and resources, Texas primarily relies on wind, natural gas, and coal for it's  energy. Nuclear provides a basline, though its consistency makes these other three sources primary considerations in times of additional energy demand. Knowing the primary three dynamic sources of energy for Texas, we'll investigate their fluctuations further
+As you can see, the contribution of solar, and hydroelectric are miniscule for Texas. Some states like Washington, source over half of their generation for hydroelectric sources. Given it's geography and resources, Texas primarily relies on wind, natural gas, and coal for it's  energy. Nuclear provides a basline, though its consistency makes these other three sources primary considerations in times of additional energy demand. Knowing the primary three dynamic sources of energy for Texas, we'll investigate their fluctuations further
 
 
 ```python
@@ -1615,73 +1603,11 @@ plt.ylabel("Mega Watt Hours");
 #plt.figure(figsize=(9,6));
 figtitle = "Mean Weekly Energy Demand 2018-2021"
 sns.relplot(x="weekday", y='demand',kind="line", color='#007EB5',
-            data= nrg.sort_values(by='weekday_num'), height= 4, 
+            data= nrg.sort_values(by='weekday_num'), height= 4,
             aspect=3).set(title= figtitle, xlabel='', ylabel='Megawatt Hours');
-#plt.savefig('../output/' + figtitle + '.png', dpi=300) 
+#plt.savefig('../output/' + figtitle + '.png', dpi=300)
 ```
 
-
-    ---------------------------------------------------------------------------
-
-    ValueError                                Traceback (most recent call last)
-
-    ~\AppData\Local\Temp/ipykernel_3616/895284136.py in <module>
-          1 #plt.figure(figsize=(9,6));
-          2 figtitle = "Mean Weekly Energy Demand 2018-2021"
-    ----> 3 sns.relplot(x="weekday", y='demand',kind="line", color='#007EB5',
-          4             data= nrg.sort_values(by='weekday_num'), height= 4,
-          5             aspect=3).set(title= figtitle, xlabel='', ylabel='Megawatt Hours');
-    
-
-    ~\anaconda3\lib\site-packages\seaborn\_decorators.py in inner_f(*args, **kwargs)
-         44             )
-         45         kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
-    ---> 46         return f(**kwargs)
-         47     return inner_f
-         48 
-    
-
-    ~\anaconda3\lib\site-packages\seaborn\relational.py in relplot(x, y, hue, size, style, data, row, col, col_wrap, row_order, col_order, palette, hue_order, hue_norm, sizes, size_order, size_norm, markers, dashes, style_order, legend, kind, height, aspect, facet_kws, units, **kwargs)
-        945 
-        946     # Use the full dataset to map the semantics
-    --> 947     p = plotter(
-        948         data=data,
-        949         variables=plotter.get_semantics(locals()),
-    
-
-    ~\anaconda3\lib\site-packages\seaborn\relational.py in __init__(self, data, variables, estimator, ci, n_boot, seed, sort, err_style, err_kws, legend)
-        365         )
-        366 
-    --> 367         super().__init__(data=data, variables=variables)
-        368 
-        369         self.estimator = estimator
-    
-
-    ~\anaconda3\lib\site-packages\seaborn\_core.py in __init__(self, data, variables)
-        603     def __init__(self, data=None, variables={}):
-        604 
-    --> 605         self.assign_variables(data, variables)
-        606 
-        607         for var, cls in self._semantic_mappings.items():
-    
-
-    ~\anaconda3\lib\site-packages\seaborn\_core.py in assign_variables(self, data, variables)
-        666         else:
-        667             self.input_format = "long"
-    --> 668             plot_data, variables = self._assign_variables_longform(
-        669                 data, **variables,
-        670             )
-    
-
-    ~\anaconda3\lib\site-packages\seaborn\_core.py in _assign_variables_longform(self, data, **kwargs)
-        901 
-        902                 err = f"Could not interpret value `{val}` for parameter `{key}`"
-    --> 903                 raise ValueError(err)
-        904 
-        905             else:
-    
-
-    ValueError: Could not interpret value `demand` for parameter `y`
 
 
 <br><br>
@@ -1694,7 +1620,7 @@ figtitle = "Mean Daily Energy Demand"
 #plt.figure(figsize=(9,6));
 sns.relplot(x="hour_num", y='demand',kind="line",
                 data=nrg, height=4, aspect=3).set(xlabel='',ylabel='Megawatt Hours', title=figtitle);
-#plt.savefig('../output/' + figtitle + '.png', dpi=300) 
+#plt.savefig('../output/' + figtitle + '.png', dpi=300)
 ```
 
 <br><br>
@@ -1705,7 +1631,7 @@ Here we can see the **variation** of demand at night at during the day. There is
 ```python
 plt.figure(figsize=(6,6));
 figtitle = "Variation in Daily Demand"
-sns.violinplot(data=nrg, 
+sns.violinplot(data=nrg,
                x="day_night", y="demand", order=['Day','Night'],
                split=False, inner="quart", linewidth=1,
                palette='viridis_r').set(title=figtitle,ylabel='Megawatt Hours')  
@@ -1721,7 +1647,7 @@ sns.despine(left=True)
 
 <br>
 
-Given the volatility and numerous temporal trends present in the data, we chose to go with a model that doesn't retain too much knowledge. This would serve a different purpose as the EIA's 12 hour ahead model, in that it would only predict an hour ahead, but be more reactive to unexpected changes. this is because the Triple exponential smoothing model makes predictions upon a short time window, and thus running the model on historical data can serve as our predictive performence
+Given the volatility and numerous temporal trends present in the data, we chose to go with a model that doesn't retain too much knowledge. This would serve a different purpose as the EIA's 12 hour ahead model, in that it would only predict an hour ahead, but be more reactive to unexpected changes. this is because the Triple exponential smoothing model makes predictions upon a short time window, and thus running the model on historical data can serve as our predictive performance
 
 
 
@@ -1933,12 +1859,12 @@ def seasonal_factors_mul(s,d,slen,cols):
 def exp_smooth_funct(d, slen=12, extra_periods=1, alpha=0.4, beta=0.4, phi=0.9, gamma=0.3):
 ###Data Science for Supply Chain Management by Nicolas Vandepunt###
     cols = len(d)
-    
+
     d = np.append(d,[np.nan]*extra_periods)
-    
+
     f,a,b,s = np.full((4, cols+extra_periods), np.nan)
     s = seasonal_factors_mul(s,d,slen,cols)
-    
+
     a[0] = d[0]/s[0]
     b[0] = d[1]/s[1] - d[0]/s[0]
 
@@ -1946,17 +1872,17 @@ def exp_smooth_funct(d, slen=12, extra_periods=1, alpha=0.4, beta=0.4, phi=0.9, 
         f[t] = (a[t-1] + phi*b[t-1])*s[t]
         a[t] = alpha*d[t]/s[t] + (1-alpha)*(a[t-1]+phi*b[t-1])
         b[t] = beta*(a[t]-a[t-1]) + (1-beta)*phi*b[t-1]
-        
-        
-        
+
+
+
     for t in range(slen,cols):
         f[t] = (a[t-1] + phi*b[t-1]) * s[t-slen]
         a[t] = alpha * d[t]/s[t-slen] + (1-alpha)*(a[t-1]+phi*b[t-1])
         b[t] = beta*(a[t]-a[t-1]) + (1-beta)*phi*b[t-1]
         s[t] = gamma*d[t]/a[t] + (1-gamma)*s[t-slen]
-        
-                
-                
+
+
+
     for t in range(cols,cols+extra_periods):
         f[t] = (a[t-1] + phi*b[t-1])*s[t-slen]
         a[t] = f[t]/s[t-slen]
@@ -1975,7 +1901,7 @@ mae_function(df_three)
     Bias: -0.34, -0.00%
     MAE: 3385.78, 7.68%
     RMSE: 4188.94, 9.50%
-    
+
 
 
 ```python
@@ -2015,7 +1941,7 @@ tri_exp[['Demand','Forecast']][10000:12000].plot(figsize=(20,3), kind='line',tit
 ![png](index_files/index_101_1.png)
 
 
-Model 3 - Triple Exponential Smoothing: Takes exponential smoothing and introduces seasonailty parameter. The bias is -0.93, MAE: 1337, and RMSE: 1687.
+Model 3 - Triple Exponential Smoothing: Takes exponential smoothing and introduces seasonality parameter. The bias is -0.93, MAE: 1337, and RMSE: 1687.
 
 
 ```python
@@ -2025,7 +1951,7 @@ mae_function(tri_exp)
     Bias: -0.93, -0.00%
     MAE: 1337.39, 3.03%
     RMSE: 1687.98, 3.83%
-    
+
 
 
 ```python
@@ -2244,7 +2170,7 @@ print(nrg.shape)
 ```
 
     (28366, 12)
-    
+
 
 
 ```python
@@ -2254,7 +2180,7 @@ print(nrg.index[-1])
 
     2022-02-06 04:00:00
     2018-11-12 07:00:00
-    
+
 
 ---
 
@@ -2317,7 +2243,7 @@ mae_function(df)
     Bias: -173.09, -0.39%
     MAE: 1107.15, 2.53%
     RMSE: 1830.83, 4.18%
-    
+
 
 ### Residuals
 
@@ -2380,7 +2306,7 @@ mae_function(test)
     Bias: -0.93, -0.00%
     MAE: 1337.39, 3.03%
     RMSE: 1687.98, 3.83%
-    
+
 
 ### Rejoin date-time to model output
 
