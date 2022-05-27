@@ -1610,7 +1610,7 @@ sns.relplot(x="weekday", y='demand',kind="line", color='#007EB5',
 #plt.savefig('../output/' + figtitle + '.png', dpi=300)
 ```
 
-
+![png](img/Mean Weekly Energy Demand 2018-2021.png)
 
 <br><br>
 
@@ -1624,7 +1624,7 @@ sns.relplot(x="hour_num", y='demand',kind="line",
                 data=nrg, height=4, aspect=3).set(xlabel='',ylabel='Megawatt Hours', title=figtitle);
 #plt.savefig('../output/' + figtitle + '.png', dpi=300)
 ```
-
+![png](img/Mean Weekly Energy Demand 2018-2021.png)
 <br><br>
 
 Here we can see the **variation** of demand at night at during the day. There is wide variation but more-so at night
